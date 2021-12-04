@@ -10,40 +10,92 @@ namespace AdventOfCode {
         public static readonly string App = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
         public static readonly string Inputs = Path.Combine(App, "Inputs");
 
-        public static int TraverseMap(Point slope) {
-            int numTrees = 0, numMoves = 0;
+        
+        public class Counter
+        {
+            public double ones = 0;
+            public double zeros = 0;
+        }
 
-            var matrix = Utils.ReadCharMatrix(Path.Combine(Inputs, "Day03.txt"));
-            int maxCols = matrix[0].Length;
-            int maxLines = matrix.Length - 1;
-
-            Point p = new Point(0, 0);
-            while (p.Y < maxLines) {
-                numMoves++;
-                p.X = p.X + slope.X;
-                p.Y = p.Y + slope.Y;
-                if (p.Y > maxLines) { p.Y = maxLines; }
-                if (matrix[p.Y][p.X % maxCols] == '#') {
-                    numTrees++;
-                    matrix[p.Y][p.X % maxCols] = 'X';
+        public static double[] FindVals(Counter[] counters) {
+            var res = new double[2];
+            for (int i=0;i< counters.Length; i++) {
+                int idx = counters.Length - i - 1;
+                double power = Math.Pow(2, idx);
+                double min = 0, max = 0;
+                if (counters[i].ones > counters[i].zeros) {
+                    min += power * 0;
+                    max += power * 1;
                 } else {
-                    matrix[p.Y][p.X % maxCols] = 'O';
+                    min += power * 1;
+                    max += power * 0;
+                }
+                res[0] += max;
+                res[1] += min;
+            }
+            return res;
+        }
+
+        public static void First()
+        {
+            var lines = Utils.ReadLines(Path.Combine(Inputs, "Day03.txt"));
+            var counter = new Counter[lines.First().Length];
+            var len = lines.First().Length;
+            foreach (var l in lines)
+            {
+                for (int i = 0; i < l.Length; i++)
+                {
+                    if (counter[i] == null) counter[i] = new Counter();
+                    if (l[i] == '1') counter[i].ones++;
+                    else counter[i].zeros++;
                 }
             }
-            return numTrees;
+
+            var res = FindVals(counter);
+            Console.WriteLine("Gamma is {0}", res[0]);
+            Console.WriteLine("Epsilon is {0}", res[1]);
+            Console.WriteLine("Result is {0}", res[0] * res[1]);
         }
 
-        public static void First() {
-            Console.WriteLine("Number of trees is: {0}", TraverseMap(new Point(3, 1)));
+        public static List<string> GetRatingPerCol(List<string> lines, int col, Kind kind)
+        {
+            var ones = new List<string>();
+            var zeros = new List<string>();
+            foreach (var l in lines)
+            {
+                if (l[col] == '1') ones.Add(l);
+                else zeros.Add(l);
+            }
+            if (kind is Kind.Oxygen) 
+                return (ones.Count() >= zeros.Count()) ? ones : zeros;
+            else
+                return (zeros.Count() <= ones.Count()) ? zeros : ones;
         }
+
+        public enum Kind { Oxygen, CO2 }
+
+        public static string GetRating(List<string> lines, Kind kind)
+        {
+            int i = 0;
+            var currLines = lines.ToArray();
+            var wordCount = lines[0].Length;
+            while (currLines.Length > 1 && i < wordCount)
+            {
+                currLines = GetRatingPerCol(currLines.ToList(), i, kind).ToArray();
+                i++;
+            }
+            return currLines[0];
+        }
+
         public static void Second() {
-            int a = TraverseMap(new Point(1, 1));
-            int b = TraverseMap(new Point(3, 1));
-            int c = TraverseMap(new Point(5, 1));
-            int d = TraverseMap(new Point(7, 1));
-            int e = TraverseMap(new Point(1, 2));
-            long total = (long) a * b * c * d * e;
-            Console.WriteLine("Total number of trees multiplied is {0}", total);
+            var lines = Utils.ReadLines(Path.Combine(Inputs, "day03.txt"));
+            var oxVal = GetRating(lines.ToList(), Kind.Oxygen);
+            var co2Val = GetRating(lines.ToList(), Kind.CO2);
+
+
+
+            Console.WriteLine("Oxygen is {0}", Convert.ToInt64(oxVal, 2));
+            Console.WriteLine("CO2 is {0}", Convert.ToInt64(co2Val, 2));
         }
     }
 }

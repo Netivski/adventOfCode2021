@@ -12,41 +12,24 @@ namespace AdventOfCode {
         public static void First() {
             var lines = Utils.ReadIntLines(Path.Combine(Inputs, "Day01.txt"));
             var vals = new HashSet<int>(lines);
-            var sumTotal = 2020;
 
-            for (int i = 0; i < lines.Length; i++) {
-                int match = sumTotal - lines[i];
-                if (vals.Contains(match)) {
-                    Console.WriteLine("Found it! {0}+{1}={2}", lines[i], match, sumTotal);
-                    Console.WriteLine("Answer is {0}*{1}={2}", lines[i], match, lines[i] * match);
-                    return;
-                }
+            var increases = 1;
+            for (int i = 1; i < lines.Length -1; i++) {
+                if (lines[i] > lines[i - 1]) increases++;
             }
+            Console.WriteLine("Number of increases: {0}", increases);
         }
 
         public static void Second() {
             var lines = Utils.ReadIntLines(Path.Combine(Inputs, "Day01.txt"));
+            var vals = new HashSet<int>(lines);
 
-            int sumTotal = 2020;
-            Array.Sort(lines);
-            for (int i = 0; i < lines.Length; i++) {
-                var first = lines[i];
-                var left = i + 1;
-                var right = lines.Length - 1;
-                while (left < right) {
-                    int tempTotal = first + lines[left] + lines[right];
-                    if (tempTotal == sumTotal) {
-                        Console.WriteLine("Found it! {0}+{1}+{2}={3}", first, lines[left], lines[right], sumTotal);
-                        Console.WriteLine("Answer is {0}*{1}*{2}={3}", first, lines[left], lines[right], first * lines[left] * lines[right]);
-                        return;
-                    } else if (tempTotal > sumTotal) {
-                        right--;
-                    } else if (tempTotal < sumTotal) {
-                        left++;
-                    }
-                }
-
+            var increases = 0;
+            for (int i = 0; i <= lines.Length - 4; i++)
+            {
+                if ((lines[i+1]+lines[i+2]+lines[i+3]) > (lines[i]+lines[i+1]+lines[i+2])) increases++;
             }
+            Console.WriteLine("Number of increases: {0}", increases);
         }
     }
 }

@@ -35,29 +35,53 @@ namespace AdventOfCode {
 
         public static void First() {
             var lines = Utils.ReadLines(Path.Combine(Inputs, "Day02.txt"));
-            int valids = 0, min, max;
-            char ch;
-            string pass;
+            int depth = 0;
+            int horiz = 0;
+
 
             foreach (var l in lines) {
-                if (CompliesWithTobogan(l, out min, out max, out ch, out pass)) {
-                    valids++;
+                var coord = l.Split(" ");
+                switch(coord[0])
+                {
+                    case "forward":
+                        horiz += int.Parse(coord[1]);
+                        break;
+                    case "up":
+                        depth -= int.Parse(coord[1]);
+                        break;
+                    case "down":
+                        depth += int.Parse(coord[1]);
+                        break;
                 }
             }
-            Console.WriteLine("There are {0} valid password!", valids);
+            Console.WriteLine("Coords are {0}", depth*horiz);
         }
         public static void Second() {
             var lines = Utils.ReadLines(Path.Combine(Inputs, "Day02.txt"));
-            int valids = 0, min, max;
-            char ch;
-            string pass;
+            int depth = 0;
+            int horiz = 0;
+            int aim = 0;
 
-            foreach (var l in lines) {
-                if (CompliesWithSled(l, out min, out max, out ch, out pass)) {
-                    valids++;
+            foreach (var l in lines)
+            {
+                var coord = l.Split(" ");
+                switch (coord[0])
+                {
+                    case "forward":
+                        horiz += int.Parse(coord[1]);
+                        depth += (aim * int.Parse(coord[1]));
+                        break;
+                    case "up":
+                        //depth -= int.Parse(coord[1]);
+                        aim -= int.Parse(coord[1]);
+                        break;
+                    case "down":
+                        //depth += int.Parse(coord[1]);
+                        aim += int.Parse(coord[1]);
+                        break;
                 }
             }
-            Console.WriteLine("There are {0} valid password!", valids);
+            Console.WriteLine("Coords are {0}", depth * horiz);
         }
     }
 }

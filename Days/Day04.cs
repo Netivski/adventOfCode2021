@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Drawing;
 using System.IO;
 using System.Text;
@@ -12,69 +13,98 @@ namespace AdventOfCode {
         public static readonly string App = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
         public static readonly string Inputs = Path.Combine(App, "Inputs");
 
-        public static bool CheckPassport(Hashtable passport) {
-            if (passport.ContainsKey("byr") 
-                && passport.ContainsKey("iyr") 
-                && passport.ContainsKey("eyr") 
-                && passport.ContainsKey("hgt") 
-                && passport.ContainsKey("hcl") 
-                && passport.ContainsKey("ecl") 
-                && passport.ContainsKey("pid")) {
-                return true;
+        public class Card {
+            public List<int> nums = new List<int>();
+            public string index = new string(' ', 25);
+            public int calledTotal = 0;
+            public int cardTotal = 0;
+            public bool alreadyWon = false;
+
+            public bool HasBingo() {
+                string idx = new string(index);
+                
+                for (int i = 0; i < 25; i += 5) {
+                    if (idx.Substring(i, 5) == "xxxxx") return true;
+                }
+                for (int i = 0; i < 5; i++) {
+                    if (String.Concat(index[i], index[i + 5], index[i + 10], index[i + 15], index[i + 20]) == "xxxxx") return true; ;
+                }
+                return false;
             }
-            return false;
         }
 
-        public static bool DoubleCheckPassport(Hashtable passport) {
-            if ((passport.ContainsKey("byr") && int.Parse(passport["byr"].ToString()) >= 1920 && int.Parse(passport["byr"].ToString()) <= 2002)
-                && (passport.ContainsKey("iyr") && int.Parse(passport["iyr"].ToString()) >= 2010 && int.Parse(passport["iyr"].ToString()) <= 2020)
-                && (passport.ContainsKey("eyr") && int.Parse(passport["eyr"].ToString()) >= 2020 && int.Parse(passport["eyr"].ToString()) <= 2030)
-                && (passport.ContainsKey("hgt"))
-                && (passport.ContainsKey("hcl"))
-                && (passport.ContainsKey("ecl"))
-                && (passport.ContainsKey("pid") && passport["pid"].ToString().Length == 9)) {
+        public static List<Card> FillCards(string[] input) {
+            List<Card> cards = new();
+            Card card;
 
-                var hcl = passport["hcl"].ToString();
-                if (!(hcl.StartsWith('#') && hcl.Length == 7)) {
-                    return false;
-                }
-                var ecl = passport["ecl"].ToString();
-                if (!(ecl == "amb" || ecl == "blu" || ecl == "brn" || ecl == "gry" || ecl == "grn" || ecl == "hzl" || ecl == "oth")) {
-                    return false;
-                }
-
-                var hgt = passport["hgt"].ToString();
-                if (hgt.EndsWith("cm") || hgt.EndsWith("in")) {
-                    var isHclCm = hgt.EndsWith("cm");
-                    var val = int.Parse(hgt.Substring(0, hgt.Length - 2));
-                    if (isHclCm) {
-                        return (val >= 150 && val <= 193);
-                    } else {
-                        return (val >= 59 && val <= 76);
+            for (int i = 2; i < input.Length; i++) {
+                card = new Card();
+                int count = 0;
+                while (count < 5) {
+                    foreach (string num in input[i + count].Split(' ')) {
+                        if (num == String.Empty) continue;
+                        int val = Convert.ToInt32(num);
+                        card.nums.Add(val);
+                        card.cardTotal += val;
                     }
+                    count++;
                 }
-
+                cards.Add(card);
+                i += 5;
             }
-            return false;
+            return cards;
+
         }
 
         public static void First() {
-            var s = Utils.ReadPassports(Path.Combine(Inputs, "Day04.txt"));
-            int valids = 0, dblValids = 0;
-            foreach(var passport in s) {
-                if (CheckPassport(passport)) { valids++; }
-                if (DoubleCheckPassport(passport)) { dblValids++; }
+            var lines = Utils.ReadLines(Path.Combine(Inputs, "day04.txt")).ToArray();
+            var numbers = lines[0].Split(',');
+            List<Card> cards = FillCards(lines);
+
+            foreach (string n in numbers) {
+                int val = Convert.ToInt32(n);
+                foreach(Card c in cards) {
+                    if (c.nums.Contains(val)) {
+                        int cardIdx = c.nums.IndexOf(val);
+                        c.index = c.index.Remove(cardIdx, 1).Insert(cardIdx, "x");
+                        c.calledTotal += val;
+                        if (c.HasBingo()){
+                            Console.WriteLine("BINGO in card {0}!", cards.IndexOf(c));
+                            Console.WriteLine("Card total is {0}!", c.cardTotal-c.calledTotal);
+                            Console.WriteLine("Called number is {0}!", val);
+                            Console.WriteLine("Response is {0}!", (c.cardTotal-c.calledTotal)*val);
+                            return;
+                        }
+                    }
+                }
             }
-            Console.WriteLine("Valid passports: {0}", valids);
         }
+
+
         public static void Second() {
-            var s = Utils.ReadPassports(Path.Combine(Inputs, "Day04.txt"));
-            int valids = 0, dblValids = 0;
-            foreach (var passport in s) {
-                if (CheckPassport(passport)) { valids++; }
-                if (DoubleCheckPassport(passport)) { dblValids++; }
+            var lines = Utils.ReadLines(Path.Combine(Inputs, "day04.txt")).ToArray();
+            var numbers = lines[0].Split(',');
+            List<Card> cards = FillCards(lines);
+            int cardsWon = 0;
+
+            foreach (string n in numbers) {
+                int val = Convert.ToInt32(n);
+                foreach (Card c in cards) {
+                    if (c.nums.Contains(val)) {
+                        int cardIdx = c.nums.IndexOf(val);
+                        c.index = c.index.Remove(cardIdx, 1).Insert(cardIdx, "x");
+                        c.calledTotal += val;
+                        if (c.HasBingo() && !c.alreadyWon){
+                            c.alreadyWon = true;
+                            if (++cardsWon == cards.Count()) {
+                                Console.WriteLine("Card: {0} | Remaining numbers: {1} | Called number {2} | Result: {3}",
+                                    cards.IndexOf(c), c.cardTotal - c.calledTotal, val, (c.cardTotal - c.calledTotal) * val);
+                                return;
+                            }
+                        }
+                    }
+                }
             }
-            Console.WriteLine("Double valid passports: {0}", dblValids);
         }
     }
 }
