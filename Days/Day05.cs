@@ -4,64 +4,77 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Text;
+using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace AdventOfCode {
-    class Day05 {
+namespace AdventOfCode
+{
+    class Day05
+    {
 
         public static readonly string App = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
         public static readonly string Inputs = Path.Combine(App, "Inputs");
 
-        static int GetValue(string word, char oneChar, char zeroChar) {
-            // Kudos to @brunoloureiro for the optimization hint (https://github.com/Matrikss)
-            word = word.Replace(oneChar, '1');
-            word = word.Replace(zeroChar, '0');
-            return Convert.ToInt32(word, 2);
+        public static List<Point> ListOfPoints(String inputLine, bool hasDiagonals=false) {
+            var ptStr = inputLine.Split(" -> ");
+            var ptAStr = ptStr[0].Split(',');
+            var ptBStr = ptStr[1].Split(',');
+            Point ptA = new Point(Convert.ToInt32(ptAStr[0]), Convert.ToInt32(ptAStr[1]));
+            Point ptB = new Point(Convert.ToInt32(ptBStr[0]), Convert.ToInt32(ptBStr[1]));
+
+            List<Point> res = new List<Point>();
+
+            if (!hasDiagonals && !(ptA.X == ptB.X || ptA.Y == ptB.Y)) {
+                return res;
+            }
+                
+            int fromY = Math.Min(ptA.Y, ptB.Y);
+            int toY = Math.Max(ptA.Y, ptB.Y);
+            int fromX = Math.Min(ptA.X, ptB.X);
+            int toX = Math.Max(ptA.X, ptB.X);
+
+            var leftPt = ptA.X <= ptB.X ? ptA : ptB;
+            var rightPt = leftPt == ptA ? ptB : ptA;
+            while (leftPt.X <= rightPt.X) {
+                res.Add(leftPt);
+                if (leftPt == rightPt) break;
+                if (leftPt.Y < rightPt.Y) leftPt.Y++;
+                else if (leftPt.Y > rightPt.Y) leftPt.Y--;
+                if (leftPt.X < rightPt.X) leftPt.X++;
+            }
+            return res;
         }
 
-        static int FindMiddle(double max, char[] ops, char upChar, char downChar) {
-            double min = 0;
-            for (int i = 0; i < ops.Length; i++) {
-                if (ops[i] == downChar) {
-                    max = max - ((max - min) / 2);
-                } else {
-                    min = min + ((max - min) / 2);
+        public static int CountIntersections(bool hasDiagonals) {
+            var lines = Utils.ReadLines(Path.Combine(Inputs, "test.txt"));
+            Dictionary<Point, int> pts = new();
+            foreach (var l in lines)
+            {
+                var listOfPoints = ListOfPoints(l, hasDiagonals);
+                foreach (var p in listOfPoints)
+                {
+                    if (pts.ContainsKey(p)) pts[p]++;
+                    else
+                    {
+                        pts.Add(p, 1);
+                    }
                 }
             }
-            return (int)max;
+            int count = 0;
+            foreach (var p in pts)
+            {
+                if (p.Value > 1) count++;
+            }
+            return count;
         }
 
         public static void First() {
-            var lines = Utils.ReadLines(Path.Combine(Inputs, "Day05.txt"));
+            Console.WriteLine("Number of intersections is {0}", CountIntersections(false /*hasDiagonals=false*/));
 
-            var maxId = 0;
-            char[] rowsArr = new char[7];
-            char[] colsArr = new char[3];
-
-            char[] seats = new char[1024];
-
-            foreach (string line in lines) {
-                Array.Copy(line.ToCharArray(), 0, rowsArr, 0, 7);
-                var row = GetValue(new string(rowsArr), 'B', 'F');
-
-                Array.Copy(line.ToCharArray(), 7, colsArr, 0, 3);
-                var seat = GetValue(new string(colsArr), 'R', 'L');
-
-                int currId = (row * 8) + seat;
-                seats[currId] = 'X';
-
-                if ((currId) > maxId) { maxId = currId; }
-            }
-            Console.WriteLine("MaxId is: {0}", maxId);
-
-            for (int i = 8; i < 1016; i++) {
-                if (seats[i] == default(char) && seats[i - 1] == 'X' && seats[i + 1] == 'X') {
-                    Console.WriteLine("Found a seat: {0}", i);
-                }
-            }
         }
+
         public static void Second() {
-            First();
+            Console.WriteLine("Number of intersections is {0}", CountIntersections(true /*hasDiagonals=true*/));
         }
     }
 }

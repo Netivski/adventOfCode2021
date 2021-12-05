@@ -1,0 +1,27 @@
+﻿<Properties StartupConfiguration="{716EADBA-438A-4CE2-B146-08AC82B0A30E}|Default">
+  <MonoDevelop.Ide.ItemProperties.AdventOfCode2021 PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="AdventOfCode2021" expanded="True" selected="True">
+            <Node name="AdventOfCode2021" expanded="True" />
+          </Node>
+        </State>
+      </Pad>
+      <Pad Id="MonoDevelop.Debugger.WatchPad">
+        <State>
+          <Value>counters</Value>
+          <Value>ones.Count()</Value>
+          <Value>zeros.Count()</Value>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+</Properties>
