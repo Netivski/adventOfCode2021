@@ -13,56 +13,99 @@ namespace AdventOfCode {
         public static readonly string Inputs = Path.Combine(App, "Inputs");
 
         public static void First() {
-            var groupYesses = new HashSet<char>();
-            int totalYesses = 0;
-
-            var lines = Utils.ReadLines(Path.Combine(Inputs, "Day06.txt"));
-            foreach(var l in lines) {
-                if (l.Length==0) {
-                    totalYesses += groupYesses.Count;
-                    groupYesses.Clear();
-                }
-                for (int i=0; i<l.Length;i++) {
-                    groupYesses.Add(l[i]);
-                }
+            var lines = Utils.ReadLines(Path.Combine(Inputs, "test.txt"));
+            List<Int64> fishes = new();
+            foreach (string fish in lines.First().Split(',')) {
+                fishes.Add(Convert.ToInt64(fish));
             }
-            totalYesses += groupYesses.Count;
-            Console.WriteLine("Number of yesses are {0}", totalYesses);
+            int count = 160;
+            for (int i=0; i<count; i++)
+            {
+                List<Int64> newFishes = new();
+                foreach (Int64 fish in fishes) {
+                    if (fish == 0) {
+                        newFishes.Add(6);
+                        newFishes.Add(8);
+                    }
+                    else {
+                        newFishes.Add(fish - 1);
+                    }
+                }
+                fishes = newFishes;
+            }
+            Console.WriteLine("Total fishes after {0} are {1}", count, fishes.Count());
         }
 
-        static int CountMaxedEntries(Dictionary<char, int> dict, int maxValue) {
-            int maxedEntries = 0;
-            foreach (char ch in dict.Keys) {
-                if (dict[ch] == maxValue) {
-                    maxedEntries++;
+        public static int GetCount(long[] fishArr, int cycles)
+        {
+            // First "simplification"
+            for (int i = 0; i < cycles; i++)
+            {
+                int numNews = 0;
+                for (int j = 0; j < fishArr.Length; j++)
+                {
+                    if (fishArr[j] == 0)
+                    {
+                        numNews++;
+                        fishArr[j] = 6;
+                    }
+                    else
+                    {
+                        fishArr[j] -= 1;
+                    }
                 }
+                var newFishes = new Int64[numNews];
+                var oldFishes = fishArr.Length;
+                Array.Resize(ref fishArr, fishArr.Length + numNews);
+                while (numNews > 0)
+                {
+                    newFishes[numNews - 1] = 8;
+                    numNews--;
+                }
+
+                newFishes.CopyTo(fishArr, oldFishes);
             }
-            return maxedEntries;
+            return fishArr.Length;
+        }
+
+        public static Dictionary<int, long> GetAgeDict() {
+            return new() {
+                {0,0}, {1,0}, {2,0}, {3,0}, {4,0}, {5,0}, {6,0}, {7,0}, {8,0}
+            };
         }
 
         public static void Second() {
-            var lines = Utils.ReadLines(Path.Combine(Inputs, "Day06.txt"));
+            var lines = Utils.ReadLines(Path.Combine(Inputs, "day06.txt"));
+            var strFishes = lines.First().Split(',');
 
-            var yessesCount = new Dictionary<char, int>();
-            int groupTotal = 0, peopleInGroup = 0;
+            const int MAX_COUNT = 256;
+            int count = MAX_COUNT;
 
-            foreach (var l in lines) {
-                if (l.Length == 0) {
-                    groupTotal += CountMaxedEntries(yessesCount, peopleInGroup);
-                    peopleInGroup = 0;
-                    yessesCount.Clear();
-                    continue;
-                }
-                for (int i = 0; i < l.Length; i++) {
-                    if (!yessesCount.ContainsKey(l[i])) {
-                        yessesCount.Add(l[i], 0);
-                    }
-                    yessesCount[l[i]]++;
-                }
-                peopleInGroup++;
+            Dictionary<int, long> fishByAge = GetAgeDict();
+            for (int i = 0; i < strFishes.Length; i++) {
+                var val = Convert.ToInt32(strFishes[i]);
+                fishByAge[val]++;
             }
-            groupTotal += CountMaxedEntries(yessesCount, peopleInGroup);
-            Console.WriteLine("Number of consistent yesses across groups are {0}", groupTotal);
+
+            while (count > 0) {
+                var newFishCount = GetAgeDict();
+                foreach (var k in fishByAge) {
+                    if (k.Key == 0) {
+                        newFishCount[6] += k.Value;
+                        newFishCount[8] += k.Value;
+
+                    } else {
+                        newFishCount[k.Key-1] += k.Value;
+                    }
+                }
+                fishByAge = newFishCount;
+                count--;
+            }
+            long total = 0;
+            foreach(var k in fishByAge) {
+                total += k.Value;
+            }
+            Console.WriteLine("Total fishes after {0} are {1}", count, total);
         }
     }
 }

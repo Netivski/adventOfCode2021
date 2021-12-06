@@ -7,10 +7,8 @@ using System.Text;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace AdventOfCode
-{
-    class Day05
-    {
+namespace AdventOfCode {
+    class Day05 {
 
         public static readonly string App = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
         public static readonly string Inputs = Path.Combine(App, "Inputs");
@@ -46,13 +44,11 @@ namespace AdventOfCode
         }
 
         public static int CountIntersections(bool hasDiagonals) {
-            var lines = Utils.ReadLines(Path.Combine(Inputs, "test.txt"));
+            var lines = Utils.ReadLines(Path.Combine(Inputs, "day05.txt"));
             Dictionary<Point, int> pts = new();
-            foreach (var l in lines)
-            {
+            foreach (var l in lines) {
                 var listOfPoints = ListOfPoints(l, hasDiagonals);
-                foreach (var p in listOfPoints)
-                {
+                foreach (var p in listOfPoints) {
                     if (pts.ContainsKey(p)) pts[p]++;
                     else
                     {
@@ -61,8 +57,7 @@ namespace AdventOfCode
                 }
             }
             int count = 0;
-            foreach (var p in pts)
-            {
+            foreach (var p in pts) {
                 if (p.Value > 1) count++;
             }
             return count;
@@ -70,7 +65,6 @@ namespace AdventOfCode
 
         public static void First() {
             Console.WriteLine("Number of intersections is {0}", CountIntersections(false /*hasDiagonals=false*/));
-
         }
 
         public static void Second() {
