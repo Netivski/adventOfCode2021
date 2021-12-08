@@ -14,7 +14,7 @@
         "outputPath": "/Users/rcn/Projects/AdventOfCode/adventOfCode2021/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/rcn/.config/NuGet/NuGet.Config"
+          "/Users/rcn/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net6.0"

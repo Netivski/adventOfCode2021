@@ -12,88 +12,101 @@ namespace AdventOfCode {
         public static readonly string Inputs = Path.Combine(App, "Inputs");
 
         public static void First() {
-            var lines = Utils.ReadLines(Path.Combine(Inputs, "Day08.txt"));
-            HashSet<int> iVals = new HashSet<int>();
-            var acc = 0;
-
-            for (int i = 0; i < lines.Count(); i++) {
-                if (iVals.Contains(i)) {
-                    Console.WriteLine("Value is {0}", acc);
-                    return;
-                }
-                iVals.Add(i);
-
-                var instr = lines.ElementAt(i).Split(" ");
-                var offset = int.Parse(instr[1].Substring(1));
-                offset = offset * (instr[1][0] == '-' ? -1 : 1);
-
-                switch (instr[0]) {
-                    case "acc":
-                        acc += offset;
-                        break;
-                    case "jmp":
-                        i += offset - 1;
-                        break;
-                    case "nop":
-                        break;
+            var lines = Utils.ReadLines(Path.Combine(Inputs, "day08.txt"));
+            int[] counter = new int[9];
+            foreach (string l in lines)
+            {
+                var outputValue = l.Split(" | ")[1].Split(' ');
+                foreach (string o in outputValue)
+                {
+                    counter[o.Length]+=1;
                 }
             }
+            int total = counter[2] + counter[4] + counter[3] + counter[7];
+            Console.WriteLine("Number of times of 1, 4, 7 and 8 is {0}", total);
         }
+
+        static string SortString(string input)
+        {
+            char[] characters = input.ToArray();
+            Array.Sort(characters);
+            return new string(characters);
+        }
+
+        /*
+            1 segment
+                -
+            2 segments
+                1
+            3 sements
+                7
+            4 segments
+                4
+            5 segments (2, 3, 5)
+                coreSegments = 3
+                sameAsFour without CoreSegments = 5
+                        
+            6 segments (0, 6, 9)
+                !coreSegments = 6
+                sameAsFour = 9
+            7 segments
+                8
+        */
 
         public static void Second() {
-            var lines = Utils.ReadLines(Path.Combine(Inputs, "Day08.txt"));
-            Dictionary<int, int> iVals = new Dictionary<int, int>();
-            int maxLoop = 1;
-            var acc = 0;
-            bool broken;
+            var lines = Utils.ReadLines(Path.Combine(Inputs, "day08.txt"));
+            var segments = new List<string>();
+            segments.AddRange(new string(' ', 10).Split(' '));
+            int total = 0;
 
+            foreach (string line in lines) {
+                Dictionary<int, List<String>> uniqueCount = new();
+                string[] input  = line.Split(" | ");
+                foreach (var val in input[0].Split(" ")) {
+                    if (!uniqueCount.ContainsKey(val.Length)) { uniqueCount.Add(val.Length, new List<string>()); }
+                    uniqueCount[val.Length].Add(SortString(val));
+                }
+                var coreSegments = uniqueCount[2].First();
+                segments[1] = coreSegments;
+                segments[4] = uniqueCount[4].First();
+                segments[7] = uniqueCount[3].First();
+                segments[8] = uniqueCount[7].First();
 
-            for (int j = 0; j < lines.Count(); j++) {
-                var outterInstr = lines.ElementAt(j).Split(" ");
-                string[] newLines;
-
-                if (outterInstr[0] == "acc") {
-                    continue;
-                } else {
-                    newLines = new string[lines.Count()];
-                    lines.ToList().CopyTo(newLines);
-                    acc = 0;
-                    iVals.Clear();
-                    broken = false;
-
-                    if (outterInstr[0] == "nop") {
-                        newLines[j] = newLines[j].Replace("nop", "jmp");
-                    } else if (outterInstr[0] == "jmp") {
-                        newLines[j] = newLines[j].Replace("jmp", "nop");
+                var fourWithoutCore = segments[4].Replace(coreSegments.ToCharArray()[0], ' ');
+                fourWithoutCore = fourWithoutCore.Replace(coreSegments.ToCharArray()[1], ' ');
+                fourWithoutCore = fourWithoutCore.Replace(" ", "");
+                foreach (string digit in uniqueCount[5]) {
+                    if (digit.Contains(coreSegments[0]) && digit.Contains(coreSegments[1])) {
+                        segments[3] = digit;
+                    }
+                    else if (digit.Contains(fourWithoutCore[0]) && digit.Contains(fourWithoutCore[1])) {
+                        segments[5] = digit;
+                    } else {
+                        segments[2] = digit;
                     }
                 }
-
-                for (int i = 0; i < newLines.Length; i++) {
-                    iVals.TryAdd(i, 0);
-                    iVals[i] += 1;
-                    if (iVals[i] > maxLoop) {
-                        broken = true;
-                        break;
+                foreach(string digit in uniqueCount[6]) {
+                    if (digit.Contains(coreSegments[0]) ^ digit.Contains(coreSegments[1])) {
+                        segments[6] = digit;
                     }
-
-                    var op = newLines[i].Split(" ");
-                    var offset = int.Parse(op[1].Substring(1));
-                    offset = offset * (op[1][0] == '-' ? -1 : 1);
-
-                    switch (op[0]) {
-                        case "acc":
-                            acc += offset;
-                            break;
-                        case "jmp":
-                            i += offset - 1;
-                            break;
+                    else if (segments[4].All(c => digit.Contains(c))) {
+                        segments[9] = digit;
+                    } else {
+                        segments[0] = digit;
                     }
                 }
-                if (!broken) { Console.WriteLine("Acc value is {0}", acc); return; }
+                var inputDigits = input[1].Split(" ");
+                for (int i=0; i< inputDigits.Length; i++) {
+                    var digit = segments.Single(s => s == SortString(inputDigits[i]));
+                    inputDigits[i] = segments.IndexOf(digit).ToString();
+                }
+                int digitVal = Convert.ToInt32(inputDigits[0]) * 1000
+                    + Convert.ToInt32(inputDigits[1]) * 100
+                    + Convert.ToInt32(inputDigits[2]) * 10
+                    + Convert.ToInt32(inputDigits[3]) * 1;
+                total += digitVal;
             }
-
+            Console.WriteLine("Total is {0}", total);
         }
-
-
     }
 }
