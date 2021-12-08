@@ -34,23 +34,22 @@ namespace AdventOfCode {
         }
 
         /*
-            1 segment
-                -
-            2 segments
-                1
-            3 sements
-                7
-            4 segments
-                4
-            5 segments (2, 3, 5)
-                coreSegments = 3
-                sameAsFour without CoreSegments = 5
-                        
-            6 segments (0, 6, 9)
-                !coreSegments = 6
-                sameAsFour = 9
-            7 segments
-                8
+        1 segment
+            -
+        2 segments
+            1
+        3 sements
+            7
+        4 segments
+            4
+        5 segments (2, 3, 5)
+            coreSegments = 3
+            sameAsFour without CoreSegments = 5
+        6 segments (0, 6, 9)
+            !coreSegments = 6
+            sameAsFour = 9
+        7 segments
+            8
         */
 
         public static void Second() {
