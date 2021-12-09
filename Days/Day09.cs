@@ -1,61 +1,97 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 
 namespace AdventOfCode {
-
-
     class Day09 {
+        private static readonly string App =
+            Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
 
-        public static readonly string App = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-        public static readonly string Inputs = Path.Combine(App, "Inputs");
+        private static readonly string Inputs = Path.Combine(App, "Inputs");
 
-        public static void First() {
-            var lines = Utils.ReadLongLines(Path.Combine(Inputs, "Day09.txt"));
-            bool foundIt;
+        static Point Up = new Point(0, -1);
+        static Point Down = new Point(0, 1);
+        static Point Left = new Point(-1, 0);
+        static Point Right = new Point(1, 0);
 
-            for (int i = 25; i < lines.Length; i++) {
-                foundIt = false;
-                for (int j = i - 25; j < i - 1; j++) {
-                    for (int k = j + 1; k < i; k++) {
-                        if (lines[i] == lines[j] + lines[k]) {
-                            foundIt = true;
-                        }
+        private static HashSet<Point> GetMinPoints(char[][] cave) {
+            var minPts = new HashSet<Point>();
+            for (int y = 0; y < cave.Length; y++) {
+                for (int x = 0; x < cave[y].Length; x++) {
+                    var adjacent = GetAdjacentPoints(new Point(x, y), cave);
+                    var isMin = true;
+                    foreach (Point adj in adjacent) {
+                        if ((int) cave[y][x] < (int) cave[adj.Y][adj.X]) continue;
+                        isMin = false;
+                        break;
+                    }
+                    if (isMin) {
+                        minPts.Add(new Point(x, y));
                     }
                 }
-                if (!foundIt) {
-                    Console.WriteLine("Number with non matching sum is {0}", lines[i]);
-                    return;
-                }
             }
+            return minPts;
+        }
+        
+        private static HashSet<Point> GetAdjacentPoints(Point currPt, char[][] cave, bool forBasin = false) {
+            HashSet<Point> pts = new();
+            int maxRows = cave.Length;
+            int maxCols = cave[0].Length;
+
+            pts.Add(new Point(currPt.X + Right.X, currPt.Y + Right.Y));
+            pts.Add(new Point(currPt.X + Down.X, currPt.Y + Down.Y));
+            pts.Add(new Point(currPt.X + Left.X, currPt.Y + Left.Y));
+            pts.Add(new Point(currPt.X + Up.X, currPt.Y + Up.Y));
+
+            HashSet<Point> final = new();
+            foreach (Point p in pts) {
+                if (p.X < 0 || p.X >= maxCols || p.Y < 0 || p.Y >= maxRows) continue;
+                if (forBasin && cave[p.Y][p.X] == '9') continue;
+                final.Add(p);
+            }
+            return final;
         }
 
-        static long AddSmallAndLarge(long[] lines, long val) {
-            HashSet<long> vals = new HashSet<long>();
-
-            for (int i = 0; i < lines.Length; i++) {
-                vals.Add(lines[i]);
-                if (vals.Sum() == val) {
-                    long min = vals.Min();
-                    long max = vals.Max();
-                    Console.WriteLine("Found sequence with Min {0} and Max {0}. Result is {2}",
-                        min, max, min + max);
-                    return min + max;
-                } else if (vals.Sum() > val) {
-                    i = i - vals.Count() + 1;
-                    vals.Clear();
-                }
-
+        private static HashSet<Point> GetBasinPoints(Point start, HashSet<Point> currPoints, char[][] cave) {
+            var adj = GetAdjacentPoints(start, cave, true);
+            var hasNew = false;
+            foreach (Point p in adj) {
+                if (currPoints.Contains(p)) continue;
+                hasNew = true;
+                currPoints.Add(p);
             }
-            return 0;
+            if (!hasNew) return currPoints;
+            foreach (Point p in adj) {
+                currPoints.UnionWith(GetBasinPoints(p, currPoints, cave));
+            }
+            return currPoints;
         }
 
+        public static void First() {
+            var lines = Utils.ReadCharMatrix(Path.Combine(Inputs, "Day09.txt"));
+            var mins = GetMinPoints(lines);
+            var total = 0;
+            foreach (Point p in mins) {
+                total += lines[p.Y][p.X] - '0';
+            }
+            Console.WriteLine("Min total is {0}, number of mins is {1}, total is {2}", total, mins.Count,
+                total + mins.Count);
+        }
+        
         public static void Second() {
-            var lines = Utils.ReadLongLines(Path.Combine(Inputs, "Day09.txt"));
-            AddSmallAndLarge(lines, 756008079);
-
-
+            var lines = Utils.ReadCharMatrix(Path.Combine(Inputs, "Day09.txt"));
+            var minPts = GetMinPoints(lines);
+            List<int> basinPos = new();
+            foreach (Point p in minPts) {
+                HashSet<Point> basinPts = new();
+                basinPos.Add(GetBasinPoints(p, basinPts, lines).Count);
+            }
+            basinPos.Sort();
+            Console.WriteLine("There are {0} basins", basinPos.Count);
+            Console.WriteLine("Top 3 basins are {0}, {1}, {2}", basinPos[^1], basinPos[^2], basinPos[^3]);
+            Console.WriteLine("Total is {0}", basinPos[^1] * basinPos[^2] * basinPos[^3]);
         }
     }
 }

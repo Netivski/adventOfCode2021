@@ -46,6 +46,29 @@ namespace AdventOfCode {
             return lines.ToArray();
         }
 
+        public static int[][] ReadIntMatrix(string path)
+        {
+
+            IList<int[]> lines = new List<int[]>();
+            int numCols;
+
+            using (var s = new StreamReader(path))
+            {
+                string line;
+                while ((line = s.ReadLine()) != null)
+                {
+                    numCols = line.Length;
+                    int[] cols = new int[numCols];
+                    for (int i=0; i<numCols; i++)
+                    {
+                        cols[i] = Convert.ToInt32(line[i]);
+                    }
+                    lines.Add(cols);
+                }
+            }
+            return lines.ToArray();
+        }
+
         public static IList<Hashtable> ReadPassports(string path) {
 
             IList<Hashtable> list = new List<Hashtable>();

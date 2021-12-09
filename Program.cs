@@ -6,7 +6,6 @@ using System.Diagnostics;
 Stopwatch sw = new Stopwatch();
 
 sw.Start();
-Day08.Second();
-System.Threading.Thread.Sleep(1000);
+Day09.Second();
 sw.Stop();
 Console.WriteLine("Elapsed time [{0}s  |  {1}ms]",sw.Elapsed.TotalSeconds, sw.Elapsed.TotalMilliseconds);
