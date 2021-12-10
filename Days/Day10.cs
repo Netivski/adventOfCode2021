@@ -6,67 +6,61 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace AdventOfCode {
-
-
     class Day10 {
+        private static readonly string? App =
+            Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
 
-        public static readonly string App = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-        public static readonly string Inputs = Path.Combine(App, "Inputs");
+        private static readonly string Inputs = Path.Combine(App, "Inputs");
 
         public static void First() {
-            var lines = Utils.ReadIntLines(Path.Combine(Inputs, "Day10.txt"));
-            HashSet<int> l = new HashSet<int>(lines);
+            var lines = Utils.ReadCharMatrix(Path.Combine(Inputs, "day10.txt"));
+            
+            Dictionary<char, char> counterParts = new() {{'(', ')'}, {'[', ']'}, {'{', '}'}, {'<', '>'}}; 
+            Dictionary<char, int> failPts = new() {{')', 3}, {']', 57}, {'}', 1197}, {'>', 25137}};
+            Dictionary<char, int> completePts = new() {{')', 1}, {']', 2}, {'}', 3}, {'>', 4}};
 
-            List<int> list = new List<int>(lines);
-            list.Sort();
+            int total = 0;
+            List<long> totalComplete = new();
 
-            int currJolts = 0;
-            int[] diffCounter = new int[3];
-
-            for (int i = 0; i < list.Count(); i++) {
-                if (list[i] == currJolts + 1) {
-                    diffCounter[0]++;
-                    currJolts = list[i];
-                } else if (list[i] == currJolts + 2) {
-                    diffCounter[1]++;
-                    currJolts = list[i];
-                } else if (list[i] == currJolts + 3) {
-                    diffCounter[2]++;
-                    currJolts = list[i];
+            foreach (var line in lines) {
+                Stack<char> stack = new();
+                bool isConsistent = true;
+                foreach (var chr in line) {
+                    switch (chr) {
+                        case '(':
+                        case '[':
+                        case '{':
+                        case '<':
+                            stack.Push(counterParts[chr]);
+                            break;
+                        case ')':
+                        case ']':
+                        case '}':
+                        case '>':
+                            if (stack.Peek() != chr) {
+                                total += failPts[chr];
+                                isConsistent = false;
+                            }
+                            else {
+                                stack.Pop();
+                            }
+                            break;
+                    }
+                    if (!isConsistent) break;
                 }
-            }
-            Console.WriteLine("Difference of 1 count is {0}", diffCounter[0]);
-            Console.WriteLine("Difference of 3 count is {0}", diffCounter[2] + 1);
-        }
-        static long CountIt(List<int> list) {
-            Dictionary<int, long> sumOfParentsConns = new Dictionary<int, long>();
-            sumOfParentsConns[list.Count() - 1] = 1;
 
-            for (int i = list.Count - 2; i >= 0; i--) {
-                long currCount = 0;
-                for (int j = i + 1; j < list.Count; j++) {
-                    if (!(list[j] - list[i] <= 3)) { break; }
-                    currCount += sumOfParentsConns[j];
+                if (!isConsistent) continue;
+                long acc = 0;
+                while (stack.Count > 0) {
+                    acc = (acc * 5) + completePts[stack.Pop()];
                 }
-                sumOfParentsConns[i] = currCount;
+                totalComplete.Add(acc);
             }
-            return sumOfParentsConns[0];
+            totalComplete.Sort();
+            Console.WriteLine("Total is {0}", total);
+            Console.WriteLine("Total autocomplete is {0}", totalComplete.ElementAt(totalComplete.Count/2));
         }
 
-        public static void Second() {
-            var lines = Utils.ReadIntLines(Path.Combine(Inputs, "test1.txt"));
-            HashSet<int> l = new HashSet<int>(lines);
-
-            List<int> list = new List<int>(lines);
-            list.Add(0);
-            list.Sort();
-            list.Add(list.Last() + 3);
-
-            long total = 0;
-            total = CountIt(list);
-
-            Console.WriteLine("Total sequences: {0}", total);
-
-        }
+        public static void Second() { }
     }
 }

@@ -11,10 +11,10 @@ namespace AdventOfCode {
 
         private static readonly string Inputs = Path.Combine(App, "Inputs");
 
-        static Point Up = new Point(0, -1);
-        static Point Down = new Point(0, 1);
-        static Point Left = new Point(-1, 0);
-        static Point Right = new Point(1, 0);
+        private static readonly Point Up = new Point(0, -1);
+        private static readonly Point Down = new Point(0, 1);
+        private static readonly Point Left = new Point(-1, 0);
+        private static readonly Point Right = new Point(1, 0);
 
         private static HashSet<Point> GetMinPoints(char[][] cave) {
             var minPts = new HashSet<Point>();
@@ -27,14 +27,16 @@ namespace AdventOfCode {
                         isMin = false;
                         break;
                     }
+
                     if (isMin) {
                         minPts.Add(new Point(x, y));
                     }
                 }
             }
+
             return minPts;
         }
-        
+
         private static HashSet<Point> GetAdjacentPoints(Point currPt, char[][] cave, bool forBasin = false) {
             HashSet<Point> pts = new();
             int maxRows = cave.Length;
@@ -51,6 +53,7 @@ namespace AdventOfCode {
                 if (forBasin && cave[p.Y][p.X] == '9') continue;
                 final.Add(p);
             }
+
             return final;
         }
 
@@ -62,24 +65,27 @@ namespace AdventOfCode {
                 hasNew = true;
                 currPoints.Add(p);
             }
+
             if (!hasNew) return currPoints;
             foreach (Point p in adj) {
                 currPoints.UnionWith(GetBasinPoints(p, currPoints, cave));
             }
+
             return currPoints;
         }
 
         public static void First() {
             var lines = Utils.ReadCharMatrix(Path.Combine(Inputs, "Day09.txt"));
-            var mins = GetMinPoints(lines);
+            var minPts = GetMinPoints(lines);
             var total = 0;
-            foreach (Point p in mins) {
+            foreach (Point p in minPts) {
                 total += lines[p.Y][p.X] - '0';
             }
-            Console.WriteLine("Min total is {0}, number of mins is {1}, total is {2}", total, mins.Count,
-                total + mins.Count);
+
+            Console.WriteLine("Min total is {0}, number of mins is {1}, total is {2}", total, minPts.Count,
+                total + minPts.Count);
         }
-        
+
         public static void Second() {
             var lines = Utils.ReadCharMatrix(Path.Combine(Inputs, "Day09.txt"));
             var minPts = GetMinPoints(lines);
@@ -88,6 +94,7 @@ namespace AdventOfCode {
                 HashSet<Point> basinPts = new();
                 basinPos.Add(GetBasinPoints(p, basinPts, lines).Count);
             }
+
             basinPos.Sort();
             Console.WriteLine("There are {0} basins", basinPos.Count);
             Console.WriteLine("Top 3 basins are {0}, {1}, {2}", basinPos[^1], basinPos[^2], basinPos[^3]);

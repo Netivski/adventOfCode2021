@@ -5,16 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b4127c3c-bc8b-4fd9-99c3-f1942d5b7966" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.AdventOfCode2021/.idea/encodings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.vs/AdventOfCode2021/xs/UserPrefs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.vs/AdventOfCode2021/xs/UserPrefs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.AdventOfCode2021/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.AdventOfCode2021/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Days/Day09.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Days/Day09.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Inputs/Day09.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Inputs/Day09.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Days/Day10.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Days/Day10.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Inputs/Day10.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Inputs/Day10.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Inputs/test.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Inputs/test.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Utils.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Utils.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bin/Debug/net6.0/AdventOfCode2021.dll" beforeDir="false" afterPath="$PROJECT_DIR$/bin/Debug/net6.0/AdventOfCode2021.dll" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bin/Debug/net6.0/AdventOfCode2021.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/bin/Debug/net6.0/AdventOfCode2021.pdb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/Debug/net6.0/Inputs/Day09.txt" beforeDir="false" afterPath="$PROJECT_DIR$/bin/Debug/net6.0/Inputs/Day09.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/Debug/net6.0/Inputs/Day10.txt" beforeDir="false" afterPath="$PROJECT_DIR$/bin/Debug/net6.0/Inputs/Day10.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bin/Debug/net6.0/Inputs/test.txt" beforeDir="false" afterPath="$PROJECT_DIR$/bin/Debug/net6.0/Inputs/test.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bin/Debug/net6.0/ref/AdventOfCode2021.dll" beforeDir="false" afterPath="$PROJECT_DIR$/bin/Debug/net6.0/ref/AdventOfCode2021.dll" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/obj/Debug/net6.0/AdventOfCode2021.dll" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Debug/net6.0/AdventOfCode2021.dll" afterDir="false" />
@@ -25,6 +24,17 @@
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -38,7 +48,9 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="settings.editor.selected.configurable" value="configurable.group.editor" />
+    <property name="XThreadsFramesViewSplitterKey" value="0.33407572" />
+    <property name="full.screen.before.presentation.mode" value="false" />
+    <property name="settings.editor.selected.configurable" value="editor.preferences.fonts.default" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="RunManager">
@@ -69,7 +81,8 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1639055477558</updated>
-      <workItem from="1639055482047" duration="1601000" />
+      <workItem from="1639055482047" duration="7071000" />
+      <workItem from="1639124847242" duration="706000" />
     </task>
     <servers />
   </component>
@@ -89,5 +102,94 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/Days/Day09.cs</url>
+          <line>60</line>
+          <properties documentPath="$PROJECT_DIR$/Days/Day09.cs" initialLine="57" containingFunctionPresentation="method 'GetBasinPoints'">
+            <startOffsets>
+              <option value="2316" />
+            </startOffsets>
+            <endOffsets>
+              <option value="2363" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/Days/Day09.cs</url>
+          <line>56</line>
+          <properties documentPath="$PROJECT_DIR$/Days/Day09.cs" initialLine="53" containingFunctionPresentation="method 'GetAdjacentPoints'">
+            <startOffsets>
+              <option value="2169" />
+            </startOffsets>
+            <endOffsets>
+              <option value="2182" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/Days/Day09.cs</url>
+          <line>70</line>
+          <properties documentPath="$PROJECT_DIR$/Days/Day09.cs" initialLine="66" containingFunctionPresentation="method 'GetBasinPoints'">
+            <startOffsets>
+              <option value="2669" />
+            </startOffsets>
+            <endOffsets>
+              <option value="2727" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/Days/Day09.cs</url>
+          <line>57</line>
+          <properties documentPath="$PROJECT_DIR$/Days/Day09.cs" initialLine="54" containingFunctionPresentation="method 'GetAdjacentPoints'">
+            <startOffsets>
+              <option value="2191" />
+            </startOffsets>
+            <endOffsets>
+              <option value="2192" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/Days/Day09.cs</url>
+          <line>66</line>
+          <properties documentPath="$PROJECT_DIR$/Days/Day09.cs" initialLine="63" containingFunctionPresentation="method 'GetBasinPoints'">
+            <startOffsets>
+              <option value="2567" />
+            </startOffsets>
+            <endOffsets>
+              <option value="2568" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/Days/Day09.cs</url>
+          <line>65</line>
+          <properties documentPath="$PROJECT_DIR$/Days/Day09.cs" initialLine="62" containingFunctionPresentation="method 'GetBasinPoints'">
+            <startOffsets>
+              <option value="2536" />
+            </startOffsets>
+            <endOffsets>
+              <option value="2554" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="6" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+    <watches-manager>
+      <configuration name="DotNetProject">
+        <watch expression="line[i]" />
+      </configuration>
+    </watches-manager>
   </component>
 </project>
