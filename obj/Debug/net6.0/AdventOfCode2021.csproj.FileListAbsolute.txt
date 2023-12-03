@@ -32,3 +32,6 @@
 /Users/rcn/Projects/AdventOfCode/adventOfCode2021/obj/Debug/net6.0/AdventOfCode2021.pdb
 /Users/rcn/Projects/AdventOfCode/adventOfCode2021/obj/Debug/net6.0/AdventOfCode2021.genruntimeconfig.cache
 /Users/rcn/Projects/AdventOfCode/adventOfCode2021/obj/Debug/net6.0/AdventOfCode2021.csproj.AssemblyReference.cache
+/Users/rcn/Projects/AdventOfCode/adventOfCode2021/bin/Debug/net6.0/Inputs/DayX.txt
+/Users/rcn/Projects/AdventOfCode/adventOfCode2021/bin/Debug/net6.0/Inputs/Day16.txt
+/Users/rcn/Projects/AdventOfCode/adventOfCode2021/bin/Debug/net6.0/Inputs/Day17.txt

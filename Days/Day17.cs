@@ -10,21 +10,21 @@ using System.Threading.Tasks;
 namespace AdventOfCode {
 
 
-    class DayX {
+    class Day17 {
 
         public static readonly string App = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
         public static readonly string Inputs = Path.Combine(App, "Inputs");
 
 
         public static void First() {
-            var lines = Utils.ReadLines(Path.Combine(Inputs, "Day14.txt")).ToArray();
+            var lines = Utils.ReadLines(Path.Combine(Inputs, "test.txt")).ToArray();
         }
 
         
 
         public static void Second() {
 
-            var lines = Utils.ReadLines(Path.Combine(Inputs, "Day14.txt")).ToArray();
+            var lines = Utils.ReadLines(Path.Combine(Inputs, "test.txt")).ToArray();
             
         }
     }

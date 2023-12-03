@@ -7,11 +7,10 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace AdventOfCode {
-
-
     class Day11 {
+        public static readonly string App =
+            Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
 
-        public static readonly string App = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
         public static readonly string Inputs = Path.Combine(App, "Inputs");
 
         static Point Up = new Point(0, -1);
@@ -23,164 +22,161 @@ namespace AdventOfCode {
         static Point DownLeft = new Point(-1, 1);
         static Point DownRight = new Point(1, 1);
 
-        static void PrintSeating(char[][] seats) {
-            Console.WriteLine();
-            for (int i = 0; i < seats.Length; i++) {
-                for (int j = 0; j < seats[i].Length; j++) {
-                    Console.Write(seats[i][j]);
-                }
-                Console.WriteLine();
-            }
-            Console.WriteLine();
-        }
-
-        static int CountOccupied(char[][] seats) {
-            int count = 0;
-            for (int i = 0; i < seats.Length; i++) {
-                for (int j = 0; j < seats[i].Length; j++) {
-                    if (seats[i][j] == '#') { count++; };
-                }
-            }
-            return count;
-        }
-
-        static bool AreSeatingsEqual(char[][] one, char[][] another) {
-            for (int i = 0; i < one.Length; i++) {
-                if (!new string(one[i]).Equals(new string(another[i]))) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        static void IncreaseBoundary(ref Point[] points) {
-            points[0].X += UpLeft.X; points[0].Y += UpLeft.Y;
-            points[1].X += Up.X; points[1].Y += Up.Y;
-            points[2].X += UpRight.X; points[2].Y += UpRight.Y;
-            points[3].X += Left.X; points[3].Y += Left.Y;
-            points[4].X += Right.X; points[4].Y += Right.Y;
-            points[5].X += DownLeft.X; points[5].Y += DownLeft.Y;
-            points[6].X += Down.X; points[6].Y += Down.Y;
-            points[7].X += DownRight.X; points[7].Y += DownRight.Y;
-        }
-
-        static bool IsFullyOutsideBounds(Point[] points, int maxCols, int maxRows) {
-            int outsideCount = 0;
-            for (int i = 0; i < points.Length; i++) {
-                if (points[i].X >= maxCols || points[i].X < 0
-                    || points[i].Y < 0 || points[i].Y >= maxRows) {
-                    outsideCount++;
-                }
-            }
-            return outsideCount == 8;
-        }
-
-        static int GetOccupiedAdjacentSeats(char[][] matrix, Point seat, bool lineOfSight = false) {
-            int maxCols = matrix[0].Length;
+        private static HashSet<Point> GetAdjacentPoints(Point currPt, int[][] matrix) {
+            HashSet<Point> pts = new();
             int maxRows = matrix.Length;
-            int adjCount = 0;
+            int maxCols = matrix[0].Length;
 
-            //Starting from upper left clockwise
-            //   012
-            //   3 4
-            //   567
-            Point[] boundary = new Point[] {
-                new Point(seat.X + UpLeft.X, seat.Y + UpLeft.Y), new Point(seat.X + Up.X, seat.Y + Up.Y), new Point(seat.X + UpRight.X, seat.Y + UpRight.Y),
-                new Point(seat.X + Left.X, seat.Y + Left.Y), new Point(seat.X + Right.X, seat.Y + Right.Y),
-                new Point(seat.X + DownLeft.X, seat.Y + DownLeft.Y), new Point(seat.X + Down.X, seat.Y + Down.Y), new Point(seat.X + DownRight.X, seat.Y + DownRight.Y),
-            };
-            int[] boundaryStatus = new int[8]; // 0 - <empty> | 1 - free | 2 - occupied
+            pts.Add(new Point(currPt.X + Right.X, currPt.Y + Right.Y));
+            pts.Add(new Point(currPt.X + Down.X, currPt.Y + Down.Y));
+            pts.Add(new Point(currPt.X + Left.X, currPt.Y + Left.Y));
+            pts.Add(new Point(currPt.X + Up.X, currPt.Y + Up.Y));
+            pts.Add(new Point(currPt.X + UpRight.X, currPt.Y + UpRight.Y));
+            pts.Add(new Point(currPt.X + DownRight.X, currPt.Y + DownRight.Y));
+            pts.Add(new Point(currPt.X + DownLeft.X, currPt.Y + DownLeft.Y));
+            pts.Add(new Point(currPt.X + UpLeft.X, currPt.Y + UpLeft.Y));
 
-            while (!IsFullyOutsideBounds(boundary, maxCols, maxRows)) {
-                for (int i = 0; i < boundary.Length; i++) {
+            HashSet<Point> final = new();
+            foreach (Point p in pts) {
+                if (p.X < 0 || p.X >= maxCols || p.Y < 0 || p.Y >= maxRows) continue;
+                final.Add(p);
+            }
 
-                    if (boundary[i].X >= 0 && boundary[i].X < maxCols && boundary[i].Y >= 0 && boundary[i].Y < maxRows) {
-                        if (matrix[boundary[i].Y][boundary[i].X] == '#') {
-                            if (boundaryStatus[i] == 0) {
-                                boundaryStatus[i] = 2;
-                                adjCount++;
-                            }
-                        } else if (matrix[boundary[i].Y][boundary[i].X] == 'L') {
-                            if (boundaryStatus[i] == 0) { boundaryStatus[i] = 1; }
-                        }
+            return final;
+        }
+
+        private static int X_LevelUp(int x, int y, int[][] matrix) {
+            int flashes = 0;
+            if (matrix[y][x] == 0) return 0;
+            int newVal = (matrix[y][x] + 1) % 10;
+            flashes += newVal == 0 ? 1 : 0;
+            matrix[y][x] = newVal;
+            if (newVal == 0) {
+                var pts = GetAdjacentPoints(new Point(x, y), matrix);
+                foreach (Point p in pts) {
+                    if (matrix[p.Y][p.X] != 0) {
+                        flashes += LevelUp(p.X, p.Y, matrix);
                     }
                 }
-                if (!lineOfSight) { break; }
-                if (boundaryStatus.Where(e => e == 0).Count() == 0) { break; }
-                IncreaseBoundary(ref boundary);
             }
-            return adjCount;
+
+            return flashes;
+        }
+
+        private static int LevelUp(int x, int y, int[][] matrix) {
+            int flashes = 0;
+            matrix[y][x]++;
+            flashes += matrix[y][x] == 10 ? 1 : 0;
+            //Console.WriteLine("({0},{1})",x,y);
+            //PrintMatrix(matrix);
+            if (matrix[y][x] == 10) {
+                var pts = GetAdjacentPoints(new Point(x, y), matrix);
+                foreach (Point p in pts) {
+                    flashes += LevelUp(p.X, p.Y, matrix);
+                }
+            }
+
+            return flashes;
+        }
+
+        public static void PaintIt() {
+            // Get an array with the values of ConsoleColor enumeration members.
+            ConsoleColor[] colors = (ConsoleColor[]) ConsoleColor.GetValues(typeof(ConsoleColor));
+            // Save the current background and foreground colors.
+            ConsoleColor currentBackground = Console.BackgroundColor;
+            ConsoleColor currentForeground = Console.ForegroundColor;
+
+            // Display all foreground colors except the one that matches the background.
+            Console.WriteLine("All the foreground colors except {0}, the background color:",
+                currentBackground);
+            foreach (var color in colors) {
+                if (color == currentBackground) continue;
+
+                Console.ForegroundColor = color;
+                Console.WriteLine("   The foreground color is {0}.", color);
+            }
+
+            Console.WriteLine();
+            // Restore the foreground color.
+            Console.ForegroundColor = currentForeground;
+
+            // Display each background color except the one that matches the current foreground color.
+            Console.WriteLine("All the background colors except {0}, the foreground color:",
+                currentForeground);
+            foreach (var color in colors) {
+                if (color == currentForeground) continue;
+
+                Console.BackgroundColor = color;
+                Console.WriteLine("   The background color is {0}.", color);
+            }
+
+            // Restore the original console colors.
+            Console.ResetColor();
+            Console.WriteLine("\nOriginal colors restored...");
+        }
+
+        private static void PrintMatrix(int[][] matrix) {
+
+            foreach (var line in matrix) {
+                foreach (var col in line) {
+                    Console.Write(col);
+                }
+
+                Console.WriteLine();
+            }
         }
 
         public static void First() {
-            var baseSeating = Utils.ReadCharMatrix(Path.Combine(Inputs, "Day11.txt"));
-            int maxCols = baseSeating[0].Length;
-            int maxLines = baseSeating.Length;
-
-            Point p = new Point();
-
-            char[][] seatingCopy = baseSeating.Select(a => a.ToArray()).ToArray();
-            int iterCount = 0;
-            bool seatingChanged = true;
-
-            while (seatingChanged) {
-                iterCount++;
-                p.X = 0;
-                p.Y = 0;
-                while (p.Y < maxLines) {
-
-                    int adjCount = GetOccupiedAdjacentSeats(baseSeating, p);
-
-                    if (baseSeating[p.Y][p.X] == 'L' && adjCount == 0) {
-                        seatingCopy[p.Y][p.X] = '#';
-                    } else if (baseSeating[p.Y][p.X] == '#' && adjCount >= 4) {
-                        seatingCopy[p.Y][p.X] = 'L';
+            var matrix = Utils.ReadIntMatrix(Path.Combine(Inputs, "Day11.txt"));
+            int flashes = 0;
+            int CYCLE_MAX = 100;
+            int count = 1;
+            while (count <= CYCLE_MAX) {
+                int cycleFlashes = 0;
+                for (int y = 0; y < matrix.Length; y++) {
+                    for (int x = 0; x < matrix[y].Length; x++) {
+                        cycleFlashes += LevelUp(x, y, matrix);
                     }
-                    p.Y += (p.X + 1) == maxCols ? 1 : 0;
-                    p.X += 1;
-                    p.X = p.X % maxCols;
                 }
-                if (AreSeatingsEqual(seatingCopy, baseSeating)) { seatingChanged = false; }
-                baseSeating = seatingCopy.Select(a => a.ToArray()).ToArray();
+
+                for (int y = 0; y < matrix.Length; y++) {
+                    for (int x = 0; x < matrix[y].Length; x++) {
+                        matrix[y][x] = matrix[y][x] >= 10 ? 0 : matrix[y][x];
+                    }
+                }
+
+                PrintMatrix(matrix);
+                flashes += cycleFlashes;
+                count++;
             }
-            Console.WriteLine("Number of occupied seats: {0}", CountOccupied(baseSeating));
+
+            Console.WriteLine("Total flashes after {0} cycles were {1}", count, flashes);
         }
 
         public static void Second() {
-            var roundSeating = Utils.ReadCharMatrix(Path.Combine(Inputs, "Day11.txt"));
-            int maxCols = roundSeating[0].Length;
-            int maxLines = roundSeating.Length;
-
-            Point p = new Point();
-
-            char[][] roundCopy = roundSeating.Select(a => a.ToArray()).ToArray();
-            int iterCount = 0;
-            bool seatingChanged = true;
-            //PrintSeating(roundSeating);
-            while (seatingChanged) {
-
-                iterCount++;
-                p.X = 0;
-                p.Y = 0;
-                while (p.Y < maxLines) {
-
-                    int adjCount = GetOccupiedAdjacentSeats(roundSeating, p, true);
-
-                    if (roundSeating[p.Y][p.X] == 'L' && adjCount == 0) {
-                        roundCopy[p.Y][p.X] = '#';
-                    } else if (roundSeating[p.Y][p.X] == '#' && adjCount >= 5) {
-                        roundCopy[p.Y][p.X] = 'L';
+            var matrix = Utils.ReadIntMatrix(Path.Combine(Inputs, "Day11.txt"));
+            int cycleFlashes = 0;
+            int count = 0;
+            while (cycleFlashes != matrix.Length * matrix[0].Length) {
+                count++;
+                cycleFlashes = 0;
+                for (int y = 0; y < matrix.Length; y++) {
+                    for (int x = 0; x < matrix[y].Length; x++) {
+                        cycleFlashes += LevelUp(x, y, matrix);
                     }
-                    p.Y += (p.X + 1) == maxCols ? 1 : 0;
-                    p.X += 1;
-                    p.X = p.X % maxCols;
                 }
-                //PrintSeating(roundCopy);
-                if (AreSeatingsEqual(roundCopy, roundSeating)) { seatingChanged = false; }
-                roundSeating = roundCopy.Select(a => a.ToArray()).ToArray();
-            }
-            Console.WriteLine("Number of occupied seats: {0}", CountOccupied(roundSeating));
 
+                for (int y = 0; y < matrix.Length; y++) {
+                    for (int x = 0; x < matrix[y].Length; x++) {
+                        matrix[y][x] = matrix[y][x] >= 10 ? 0 : matrix[y][x];
+                    }
+                }
+
+                PrintMatrix(matrix);
+                Console.ReadLine();
+            }
+
+            Console.WriteLine("Total flashes after {0} cycles were {1}", count-1, cycleFlashes);
         }
     }
 }

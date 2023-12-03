@@ -4,63 +4,131 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace AdventOfCode {
-
-
     class Day13 {
+        public static readonly string App =
+            Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
 
-        public static readonly string App = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
         public static readonly string Inputs = Path.Combine(App, "Inputs");
 
-        public static void First() {
-            var directions = Utils.ReadLines(Path.Combine(Inputs, "test1.txt"));
-            long earliestTimestamp = long.Parse(directions.First());
-            List<long> ids = new List<long>();
-            long earliestBus = 0;
-            long earliestBusID = 0;
+        class Fold {
+            public int X { get; set; }
+            public int Y { get; set; }
 
-            foreach (string elem in directions.ElementAt(1).Split(',')) {
-                if (elem == "x") { continue; }
-                ids.Add(long.Parse(elem));
+            public Fold(int x, int y) {
+                X = x;
+                Y = y;
             }
-            for (long i = earliestTimestamp; i < Math.Pow(earliestTimestamp, 2); i++) {
-                foreach (long id in ids) {
-                    if (i % id == 0) {
-                        earliestBus = i;
-                        earliestBusID = id;
-                        break;
-                    }
-                }
-                if (earliestBusID > 0) { break; }
-            }
-            Console.WriteLine("Earliest timestamp is {0} for bus id {1}. Result is {2}", earliestBus, earliestBusID, (earliestBus - earliestTimestamp) * earliestBusID);
         }
 
-        public static void Second() {
-            Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.RealTime;
-            var directions = Utils.ReadLines(Path.Combine(Inputs, "Day13.txt"));
-            string[] ids = directions.ElementAt(1).Split(',');
-            List<long> busList = new List<long>();
-
-            for (int i = 0; i < ids.Length; i++) {
-                busList.Add(ids[i] == "x" ? 0 : long.Parse(ids[i]));
+        private static void PrintSheet(char[][] sheet) {
+            for (int y = 0; y < sheet.Length; y++) {
+                for (int x = 0; x < sheet[y].Length; x++) {
+                    Console.Write(sheet[y][x]);
+                }
+                Console.WriteLine();
             }
+        }
+
+        private static char[][] GetSheet(List<Point> points, int maxRows, int maxCols) {
+            List<char[]> lines = new();
+            ;
+            for (int i = 0; i < maxRows + 1; i++) {
+                char[] row = new String(' ',maxCols+1).ToCharArray();
+                lines.Add(row);
+            }
+
+            char[][] sheet = lines.ToArray();
+            foreach (var point in points) {
+                sheet[point.Y][point.X] = '#';
+            }
+
+            return sheet;
+        }
+
+        public static char[][] FoldH(char[][] sheet, int posY) {
+            List<char[]> lines = new();
+            int numRows = sheet.Length-1;
+
+            for (int y = 0; y < posY; y++) {
+                char[] row = new String(' ',sheet[0].Length).ToCharArray();
+                for (int x = 0; x < sheet[y].Length; x++) {
+                    if (sheet[y][x] == '#' || sheet[numRows - y][x] == '#') row[x] = '#';
+                }
+                lines.Add(row);
+            }
+
+            return lines.ToArray();
+        }
+        
+        public static char[][] FoldV(char[][] sheet, int posX) {
+            List<char[]> lines = new(); 
+            int numCols = sheet[0].Length-1;
+
             
-            long time = busList.First();
-            long step = busList.First();
-
-            for (int i = 1; i < busList.Count; i++) {
-                long b = busList[i];
-                if (b == 0) continue;
-                while ((time + i) % b != 0) {
-                    time += step;
+            for (int y = 0; y < sheet.Length; y++) {
+                char[] row = new String(' ',posX).ToCharArray();
+                for (int x = 0; x < posX; x++) {
+                    if (sheet[y][x] == '#' || sheet[y][numCols-x] == '#') row[x] = '#';
                 }
-                step = step * b;
+                lines.Add(row);
             }
-            Console.WriteLine("Earliest timestamp at which buses depart at proper offset is {0}", time);
+
+            return lines.ToArray();
         }
+
+        public static int CountDots(char[][] sheet) {
+            int total = 0;
+            for (int y = 0; y < sheet.Length; y++) {
+                for (int x = 0; x < sheet[y].Length; x++) {
+                    total += sheet[y][x] == '#' ? 1 : 0;
+                }
+            }
+
+            return total;
+        }
+
+        public static void First() {
+            var input = Utils.ReadLines(Path.Combine(Inputs, "Day13.txt"));
+            List<Point> pts = new();
+            int maxX = 0, maxY = 0;
+            List<Fold> folds = new();
+            foreach (string line in input) {
+                if (String.IsNullOrEmpty(line)) continue;
+                if (line.StartsWith("fold")) {
+                    var instruct = line.Split('=');
+                    int x = instruct[0].ElementAt(instruct[0].Length-1) == 'x' ? int.Parse(instruct[1]) : 0;;
+                    int y = instruct[0].ElementAt(instruct[0].Length-1) == 'y' ? int.Parse(instruct[1]) : 0;
+                    folds.Add(new Fold(x, y));
+                }
+                else {
+                    var coords = line.Split(',');
+                    Point p = new Point(Int32.Parse(coords[0]), Int32.Parse(coords[1]));
+                    pts.Add(p);
+                    if (p.X > maxX) maxX = p.X;
+                    if (p.Y > maxY) maxY = p.Y;
+                }
+            }
+
+            char[][] sheet = GetSheet(pts, maxY, maxX);
+            foreach (Fold f in folds) {
+                if (f.X != 0) {
+                    sheet = FoldV(sheet, f.X);
+                }
+                else {
+                    sheet = FoldH(sheet, f.Y);
+                }
+                Console.WriteLine("# of dots after fold is {0}", CountDots(sheet));
+                
+            }
+            PrintSheet(sheet);
+            Console.ReadLine();
+        }
+
+        public static void Second() { }
     }
 }

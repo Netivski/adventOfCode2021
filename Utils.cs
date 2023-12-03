@@ -12,27 +12,26 @@ namespace AdventOfCode {
         }
 
         public static int[] ReadIntLines(string path) {
-
             var lines = File.ReadAllLines(path);
             int[] results = new int[lines.Length];
             for (int i = 0; i < lines.Length; i++) {
                 results[i] = int.Parse(lines[i]);
             }
+
             return results;
         }
 
         public static long[] ReadLongLines(string path) {
-
             var lines = File.ReadAllLines(path);
             long[] results = new long[lines.Length];
             for (int i = 0; i < lines.Length; i++) {
                 results[i] = long.Parse(lines[i]);
             }
+
             return results;
         }
 
         public static char[][] ReadCharMatrix(string path) {
-
             IList<char[]> lines = new List<char[]>();
             int numCols;
 
@@ -43,34 +42,31 @@ namespace AdventOfCode {
                     lines.Add(line.ToCharArray());
                 }
             }
+
             return lines.ToArray();
         }
 
-        public static int[][] ReadIntMatrix(string path)
-        {
-
+        public static int[][] ReadIntMatrix(string path) {
             IList<int[]> lines = new List<int[]>();
             int numCols;
 
-            using (var s = new StreamReader(path))
-            {
+            using (var s = new StreamReader(path)) {
                 string line;
-                while ((line = s.ReadLine()) != null)
-                {
+                while ((line = s.ReadLine()) != null) {
                     numCols = line.Length;
                     int[] cols = new int[numCols];
-                    for (int i=0; i<numCols; i++)
-                    {
-                        cols[i] = Convert.ToInt32(line[i]);
+                    for (int i = 0; i < numCols; i++) {
+                        cols[i] = int.Parse(line[i] + "");
                     }
+
                     lines.Add(cols);
                 }
             }
+
             return lines.ToArray();
         }
 
         public static IList<Hashtable> ReadPassports(string path) {
-
             IList<Hashtable> list = new List<Hashtable>();
 
             var lines = File.ReadAllText(path).Split("\n\n");
@@ -83,8 +79,10 @@ namespace AdventOfCode {
                         h.Add(f.Substring(0, 3), f.Substring(4));
                     }
                 }
+
                 list.Add(h);
             }
+
             return list;
         }
     }

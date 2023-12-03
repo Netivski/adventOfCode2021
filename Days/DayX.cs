@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace AdventOfCode {
 
 
-    class Day14 {
+    class DayX {
 
         public static readonly string App = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
         public static readonly string Inputs = Path.Combine(App, "Inputs");
