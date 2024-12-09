@@ -1,8 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "qyVkXVwk/E5mfLGx8jUFw9chA3s6yi8mJO1h1ZawbEeE4EIfPqacj9UeVHOCgGR2M1Knox7mRYjNwKAXMGBCRw==",
+  "dgSpecHash": "B7dqle63YcUE1oTqqDgeAhoPc3ic3ARakjVp9x+sCUZMscdswh72MTknKy8J5aLRN4FbUvZuYT45+kSPi9/ehA==",
   "success": true,
   "projectFilePath": "/Users/rcn/Projects/AdventOfCode/adventOfCode2021/AdventOfCode2021.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "/Users/rcn/.nuget/packages/microsoft.netcore.app.ref/6.0.16/microsoft.netcore.app.ref.6.0.16.nupkg.sha512",
+    "/Users/rcn/.nuget/packages/microsoft.aspnetcore.app.ref/6.0.16/microsoft.aspnetcore.app.ref.6.0.16.nupkg.sha512",
+    "/Users/rcn/.nuget/packages/microsoft.netcore.app.host.osx-x64/6.0.16/microsoft.netcore.app.host.osx-x64.6.0.16.nupkg.sha512"
+  ],
   "logs": []
 }
